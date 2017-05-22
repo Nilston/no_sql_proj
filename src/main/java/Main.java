@@ -18,7 +18,9 @@ public class Main {
     Scanner scan = new Scanner(System.in);
     DB database = mongoClient.getDB("BeaverCoffee");
     DBCollection col = database.getCollection("Order");
+
     public Main() throws UnknownHostException {
+
         System.out.println("Welcome to BeaverCoffee - What do you wanna do?");
         while (true) {
             System.out.println("1. Place an order!\n2. Update an order!\n3. Delete an order!\n4. Add member!\n5. Employees\n6. Stock\n7. Get sales\n8. Who sold what?");
@@ -30,7 +32,8 @@ public class Main {
                     break;
                 case 3: deleteOrder();
                     break;
-                case 4: addMember();
+                case 4:
+                    addMember();
                     break;
                 case 5: employees();
                     break;
@@ -63,6 +66,33 @@ public class Main {
     }
 
     private void addMember() {
+        System.out.println("\n\nSo... You want to add a member? \nEnter the becoming members SSN number please.");
+        Scanner input = new Scanner(System.in);
+        String ssn = input.next();
+
+        DBCollection customers = database.getCollection("Customer");
+        DBCursor cursor = customers.find();
+
+        while (cursor.hasNext()) {
+            DBObject aMember = cursor.next();
+            if(aMember.get("SSN").equals(ssn) && aMember.get("club_member").equals("false")){
+                System.out.println("Are you sure you want to add " + ssn +  " as a member? (Yes or No)");
+                String answer = input.next().toLowerCase();
+                if(answer.equals("yes")){
+
+                    BasicDBObject newDocument = new BasicDBObject();
+                    newDocument.append("$set", new BasicDBObject().append( "club_member", "true"));
+                    BasicDBObject searchQuery = new BasicDBObject().append("SSN", ssn);
+                    customers.update(searchQuery, newDocument);
+
+                    System.out.println(aMember.get("SSN") + " I now a member!");
+
+                }
+            } else if(aMember.get("SSN").equals(ssn)) {
+                System.out.println(ssn + " Is already a member!");
+            }
+        }
+
     }
 
     private void deleteOrder() {
