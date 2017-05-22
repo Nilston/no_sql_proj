@@ -1,6 +1,7 @@
 import com.mongodb.*;
 
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -10,9 +11,9 @@ import java.util.Set;
 public class Main {
     MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
     Scanner scan = new Scanner(System.in);
+    DB database = mongoClient.getDB("BeaverCoffee");
+    DBCollection col = database.getCollection("Order");
     public Main() throws UnknownHostException {
-        DB database = mongoClient.getDB("BeaverCoffee");
-        DBCollection col = database.getCollection("Order");
         System.out.println("Welcome to BeaverCoffee - What do you wanna do?");
         while (true) {
             System.out.println("1. Place an order!\n2. Update an order!\n3. Delete an order!\n4. Add member!\n5. Employees\n6. Stock\n7. Get sales\n8. Who sold what?");
@@ -41,7 +42,7 @@ public class Main {
     }
 
     private void whoSoldThat() {
-        
+
     }
 
     private void getSales() {
@@ -64,7 +65,39 @@ public class Main {
     }
 
     private void updateOrder() {
+        System.out.print("Please tell me the ID of the order number");
+        int ordernumber = scan.nextInt();
 
+        DBCollection collection = database.getCollection("Order");
+        DBObject query = new BasicDBObject("_id", "jo");
+        DBCursor cursor = collection.find(query);
+        DBObject order = cursor.one();
+
+        System.out.print((String)order.get("id"));
+        BasicDBObject newOrder = new BasicDBObject();
+        System.out.print("What do you want to do?\n1. Edit product list\n2. Edit currency");
+        int in = scan.nextInt();
+        switch (in){
+            case 1:
+                System.out.print("Exsisting products in the list:");
+                List l = (List)order.get("product_list");
+                for(int i = 0; i <= l.size(); i++){
+                    System.out.println("" + i + ". " + l.get(i));
+                }
+                System.out.println("Select what product to edit:");
+                int product = scan.nextInt();
+                l.remove(product);
+                
+                break;
+            case 2: System.out.print("Please type the currency used: ");
+                    String curr = scan.nextLine();
+                    newOrder.append("$set", new BasicDBObject().append("currency", curr));
+                    break;
+            default: System.out.print("Nothing chosen, aborting editing\n");
+                break;
+        }
+
+        collection.update(query, newOrder);
     }
 
     private void placeOrder() {
