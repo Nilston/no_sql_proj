@@ -68,6 +68,33 @@ public class Main {
     }
 
     private void addMember() {
+        System.out.println("\n\nSo... You want to add a member? \nEnter the becoming members SSN number please.");
+        Scanner input = new Scanner(System.in);
+        String ssn = input.next();
+
+        DBCollection customers = database.getCollection("Customer");
+        DBCursor cursor = customers.find();
+
+        while (cursor.hasNext()) {
+            DBObject aMember = cursor.next();
+            if (aMember.get("SSN").equals(ssn) && aMember.get("club_member").equals("false")) {
+                System.out.println("Are you sure you want to add " + ssn + " as a member? (Yes or No)");
+                String answer = input.next().toLowerCase();
+                if (answer.equals("yes")) {
+
+                    BasicDBObject newDocument = new BasicDBObject();
+                    newDocument.append("$set", new BasicDBObject().append("club_member", "true"));
+                    BasicDBObject searchQuery = new BasicDBObject().append("SSN", ssn);
+                    customers.update(searchQuery, newDocument);
+
+                    System.out.println(aMember.get("SSN") + " I now a member!");
+
+                }
+            } else if (aMember.get("SSN").equals(ssn)) {
+                System.out.println(ssn + " Is already a member!");
+            }
+        }
+
     }
 
     private void deleteOrder() {
@@ -75,7 +102,41 @@ public class Main {
     }
 
     private void updateOrder() {
+        System.out.print("Please tell me the ID of the order number");
+        int ordernumber = scan.nextInt();
 
+        DBCollection collection = database.getCollection("Order");
+        DBObject query = new BasicDBObject("_id", "jo");
+        DBCursor cursor = collection.find(query);
+        DBObject order = cursor.one();
+
+        System.out.print((String) order.get("id"));
+        BasicDBObject newOrder = new BasicDBObject();
+        System.out.print("What do you want to do?\n1. Edit product list\n2. Edit currency");
+        int in = scan.nextInt();
+        switch (in) {
+            case 1:
+                System.out.print("Exsisting products in the list:");
+                List l = (List) order.get("product_list");
+                for (int i = 0; i <= l.size(); i++) {
+                    System.out.println("" + i + ". " + l.get(i));
+                }
+                System.out.println("Select what product to edit:");
+                int product = scan.nextInt();
+                l.remove(product);
+
+                break;
+            case 2:
+                System.out.print("Please type the currency used: ");
+                String curr = scan.nextLine();
+                newOrder.append("$set", new BasicDBObject().append("currency", curr));
+                break;
+            default:
+                System.out.print("Nothing chosen, aborting editing\n");
+                break;
+        }
+
+        collection.update(query, newOrder);
     }
 
     private void placeOrder() {
