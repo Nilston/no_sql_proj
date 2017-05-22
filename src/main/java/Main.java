@@ -15,14 +15,56 @@ public class Main {
         DBCollection col = database.getCollection("Order");
         System.out.println("Welcome to BeaverCoffee - What do you wanna do?");
         while (true) {
-            System.out.println("1. Place an order!\n2. Update an order!\n3. Delete an order!\n4. Add member!\n5. Employees\n6. Stock\n7. Get sales\n8. How sold what?");
+            System.out.println("1. Place an order!\n2. Update an order!\n3. Delete an order!\n4. Add member!\n5. Employees\n6. Stock\n7. Get sales\n8. Who sold what?");
             int input = scan.nextInt();
             switch (input) {
                 case 1: placeOrder();
                     break;
-
+                case 2: updateOrder();
+                    break;
+                case 3: deleteOrder();
+                    break;
+                case 4: addMember();
+                    break;
+                case 5: employees();
+                    break;
+                case 6: stock();
+                    break;
+                case 7: getSales();
+                    break;
+                case 8: whoSoldThat();
+                    break;
+                default: System.out.print("No, wrong");
+                    break;
             }
         }
+    }
+
+    private void whoSoldThat() {
+        
+    }
+
+    private void getSales() {
+
+    }
+
+    private void stock() {
+
+    }
+
+    private void employees() {
+
+    }
+
+    private void addMember() {
+    }
+
+    private void deleteOrder() {
+
+    }
+
+    private void updateOrder() {
+
     }
 
     private void placeOrder() {
@@ -32,6 +74,8 @@ public class Main {
             
         }
     }
+
+
 
     public static void main(String args[]) throws UnknownHostException {
         new Main();
