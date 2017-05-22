@@ -62,6 +62,12 @@ public class Main {
     }
 
     private void employees() {
+        DBCollection employees = database.getCollection("Employee");
+        DBCursor cursor = employees.find();
+
+        while (cursor.hasNext()){
+            System.out.println(cursor.next());
+        }
 
     }
 
