@@ -2,10 +2,7 @@ import com.mongodb.*;
 import com.mongodb.util.JSON;
 
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 
 import static com.sun.tools.doclint.Entity.and;
 import static com.sun.tools.doclint.Entity.prod;
@@ -14,11 +11,11 @@ import static com.sun.tools.doclint.Entity.prod;
  * Created by anton on 2017-05-22.
  */
 public class Main {
+    List <Product>productList = new ArrayList();
+    int totalprice = 0;
     MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
-    Scanner scan = new Scanner(System.in);
     DB database = mongoClient.getDB("BeaverCoffee");
-    DBCollection col = database.getCollection("Order");
-
+    Scanner scan = new Scanner(System.in);
     public Main() throws UnknownHostException {
 
         System.out.println("Welcome to BeaverCoffee - What do you wanna do?");
@@ -32,8 +29,7 @@ public class Main {
                     break;
                 case 3: deleteOrder();
                     break;
-                case 4:
-                    addMember();
+                case 4: addMember();
                     break;
                 case 5: employees();
                     break;
@@ -66,33 +62,6 @@ public class Main {
     }
 
     private void addMember() {
-        System.out.println("\n\nSo... You want to add a member? \nEnter the becoming members SSN number please.");
-        Scanner input = new Scanner(System.in);
-        String ssn = input.next();
-
-        DBCollection customers = database.getCollection("Customer");
-        DBCursor cursor = customers.find();
-
-        while (cursor.hasNext()) {
-            DBObject aMember = cursor.next();
-            if(aMember.get("SSN").equals(ssn) && aMember.get("club_member").equals("false")){
-                System.out.println("Are you sure you want to add " + ssn +  " as a member? (Yes or No)");
-                String answer = input.next().toLowerCase();
-                if(answer.equals("yes")){
-
-                    BasicDBObject newDocument = new BasicDBObject();
-                    newDocument.append("$set", new BasicDBObject().append( "club_member", "true"));
-                    BasicDBObject searchQuery = new BasicDBObject().append("SSN", ssn);
-                    customers.update(searchQuery, newDocument);
-
-                    System.out.println(aMember.get("SSN") + " I now a member!");
-
-                }
-            } else if(aMember.get("SSN").equals(ssn)) {
-                System.out.println(ssn + " Is already a member!");
-            }
-        }
-
     }
 
     private void deleteOrder() {
@@ -100,39 +69,7 @@ public class Main {
     }
 
     private void updateOrder() {
-        System.out.print("Please tell me the ID of the order number");
-        int ordernumber = scan.nextInt();
 
-        DBCollection collection = database.getCollection("Order");
-        DBObject query = new BasicDBObject("_id", "jo");
-        DBCursor cursor = collection.find(query);
-        DBObject order = cursor.one();
-
-        System.out.print((String)order.get("id"));
-        BasicDBObject newOrder = new BasicDBObject();
-        System.out.print("What do you want to do?\n1. Edit product list\n2. Edit currency");
-        int in = scan.nextInt();
-        switch (in){
-            case 1:
-                System.out.print("Exsisting products in the list:");
-                List l = (List)order.get("product_list");
-                for(int i = 0; i <= l.size(); i++){
-                    System.out.println("" + i + ". " + l.get(i));
-                }
-                System.out.println("Select what product to edit:");
-                int product = scan.nextInt();
-                l.remove(product);
-                
-                break;
-            case 2: System.out.print("Please type the currency used: ");
-                    String curr = scan.nextLine();
-                    newOrder.append("$set", new BasicDBObject().append("currency", curr));
-                    break;
-            default: System.out.print("Nothing chosen, aborting editing\n");
-                break;
-        }
-
-        collection.update(query, newOrder);
     }
 
     private void placeOrder() {
@@ -165,6 +102,27 @@ public class Main {
                     } else if (input2 == 2) {
                         addToProductList(new Product("Hot Chocolate (Cocoa Mix)", "", 15));
                     }
+            }
+            System.out.println("Do you want anything more?\n1. Yes!\n2. No!");
+            int input3 = scan.nextInt();
+            if(input3 == 2){
+                DBCollection order = database.getCollection("Order");
+                BasicDBObject newOrder = new BasicDBObject();
+                BasicDBList proList = new BasicDBList();
+                for(int j = 0; j < productList.size(); j++){
+                    proList.add(new BasicDBObject("name", productList.get(j).getName()).append( "mod", productList.get(j).getMod()).append("price", productList.get(j).getPrice()));
+                }
+                newOrder.put("productlist", proList);
+                newOrder.put("currency", "sek");
+                order.insert(newOrder);
+                theresMore = false;
+                System.out.println("You've ordered ");
+                for(int i = 0; i < productList.size(); i++){
+                    System.out.println(productList.get(i).getName() + ", " + productList.get(i).getMod());
+                }
+                System.out.println("That'll be " + totalprice + "kr.\n\n");
+                productList = new ArrayList();
+                totalprice = 0;
             }
         }
     }
@@ -203,7 +161,9 @@ public class Main {
     }
 
     private void addToProductList(Product product) {
-        System.out.println("Added an " + product.name + ", " + product.mod + " that costed " + product.price);
+        productList.add(product);
+        totalprice += product.price;
+        System.out.println("Added an " + product.name + ", " + product.mod + " that costed " + product.price + " kr.");
     }
 
     public static void main(String args[]) throws UnknownHostException {
@@ -213,10 +173,21 @@ public class Main {
     class Product{
         int price;
         String name, mod;
-        public Product(String name, String mod, int price){
+        private Product(String name, String mod, int price){
             this.name = name;
             this.mod = mod;
             this.price = price;
+        }
+        public int getPrice() {
+            return price;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getMod() {
+            return mod;
         }
     }
 }
