@@ -1,8 +1,14 @@
 import com.mongodb.*;
+import com.mongodb.util.JSON;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
+
+import static com.sun.tools.doclint.Entity.and;
+import static com.sun.tools.doclint.Entity.prod;
 
 /**
  * Created by anton on 2017-05-22.
@@ -69,16 +75,86 @@ public class Main {
 
     private void placeOrder() {
         boolean theresMore = true;
-        System.out.print("What do you like to order?");
-        while(theresMore){
-            
+        System.out.println("What do you like to order?");
+        while (theresMore) {
+            System.out.println("1. Whole-Bean Coffee\n2. Brewed Coffee\n3. Espresso\n4. Latte\n5. Capucccino\n6. Hot Chocolate\n7. Noting more, thanks!");
+            int input1 = scan.nextInt();
+            switch (input1) {
+                case 1:
+                    whatRoast();
+                    break;
+                case 2:
+                    addToProductList(new Product("Brewed Coffee", "", 20));
+                    break;
+                case 3:
+                    addToProductList(new Product("Espresso", "", 20));
+                    break;
+                case 4:
+                    whatMilk("Latte");
+                    break;
+                case 5:
+                    whatMilk("Capuccino");
+                    break;
+                case 6:
+                    System.out.println("Would you like wipped cream?\n1. Yes!\n2. No!");
+                    int input2 = scan.nextInt();
+                    if (input2 == 1) {
+                        addToProductList(new Product("Hot Chocolate (Cocoa Mix)", "Wipped Cream" ,15));
+                    } else if (input2 == 2) {
+                        addToProductList(new Product("Hot Chocolate (Cocoa Mix)", "", 15));
+                    }
+            }
         }
     }
 
 
+    private void whatMilk(String drink) {
+        System.out.println("What kind of steamed milk would you like for your " + drink + "?");
+        System.out.println("1. Skim Milk\n2. Soy Milk\n3. Whole Milk,\n4. 2%Milk\n");
+        int input = scan.nextInt();
+        switch (input) {
+            case 1: addToProductList(new Product(drink, "Skim Milk", 20));
+                break;
+            case 2: addToProductList(new Product(drink, "Soy Milk", 20));
+                break;
+            case 3: addToProductList(new Product(drink, "Whole Milk", 20));
+                break;
+            case 4: addToProductList(new Product(drink, "2% Milk", 20));
+        }
+    }
+
+    private void whatRoast() {
+        System.out.println("What roast would you like for Whole-Bean Coffe?");
+        System.out.println("1. Espresso Roast\n2. Whole Bean French Roast\n3. Qhole Bean Ligt Roast");
+        int input = scan.nextInt();
+        switch (input) {
+            case 1:
+                addToProductList(new Product("Whole-Bean Coffee", "Espresso Roast" ,25));
+                break;
+            case 2:
+                addToProductList(new Product("Whole-Bean Coffee", "Whole Bean French Roast" ,25));
+                break;
+            case 3:
+                addToProductList(new Product("Whole-Bean Coffee", "Qhole Bean Ligt Roast" ,25));
+                break;
+        }
+    }
+
+    private void addToProductList(Product product) {
+        System.out.println("Added an " + product.name + ", " + product.mod + " that costed " + product.price);
+    }
 
     public static void main(String args[]) throws UnknownHostException {
         new Main();
 
+    }
+    class Product{
+        int price;
+        String name, mod;
+        public Product(String name, String mod, int price){
+            this.name = name;
+            this.mod = mod;
+            this.price = price;
+        }
     }
 }
