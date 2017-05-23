@@ -76,7 +76,39 @@ public class Main {
     }
 
     private void whoSoldThat() {
+        System.out.println("Specify the starting time period like: yyyy-MM-dd hh:mm:ss");
+        String start = scan.next();
 
+        System.out.println("Specify the ending time period like: yyyy-MM-dd hh:mm:ss");
+        String end = scan.next();
+        Date fromDate = new Date();
+        Date toDate = new Date();
+        try {
+            fromDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(start);
+            toDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(end);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Please give me the SSN of the employee: ");
+        String ssn = scan.next();
+
+        DBCollection collection = database.getCollection("Order");
+        BasicDBObject query = new BasicDBObject();
+        query.put("date", BasicDBObjectBuilder.start("$gte", fromDate).add("$lte", toDate).get());
+        BasicDBObject query2 = new BasicDBObject("serving_employee", ssn);
+
+        BasicDBList and = new BasicDBList();
+        and.add(query);
+        and.add(query2);
+
+        BasicDBObject q = new BasicDBObject("$and", and);
+        DBCursor cursor = collection.find(q).sort(new BasicDBObject("date", -1));
+        System.out.println("This is the orders performed from " + fromDate + " to " + toDate);
+        while (cursor.hasNext()) {
+            DBObject obj = cursor.next();
+            System.out.println(obj.get("_id"));
+        }
     }
 
     private void getSales() {
@@ -97,7 +129,12 @@ public class Main {
         DBCollection collection = database.getCollection("Order");
         BasicDBObject query = new BasicDBObject();
         query.put("date", BasicDBObjectBuilder.start("$gte", fromDate).add("$lte", toDate).get());
-        collection.find(query).sort(new BasicDBObject("dateAdded", -1));
+        DBCursor cursor = collection.find(query).sort(new BasicDBObject("date", -1));
+        System.out.println("This is the orders performed from " + fromDate + " to " + toDate);
+        while (cursor.hasNext()) {
+            DBObject obj = cursor.next();
+            System.out.println(obj.get("_id"));
+        }
     }
 
     private void stock() {
