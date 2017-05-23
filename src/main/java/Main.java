@@ -194,6 +194,7 @@ public class Main  {
             String employerSsn = input.next();
             DBCursor cursor1 = location.find();
             BasicDBObject privileges = (BasicDBObject) cursor1.next().get("employer");
+            BasicDBList commentList = new BasicDBList();
 
             if (privileges.get("SSN").equals(employerSsn)){
                 System.out.println("Enter the employees SSN number.");
@@ -208,9 +209,9 @@ public class Main  {
                         if(comment.length() > 300){
                             comment = comment.substring(0, 300);
                         }
-
+                        commentList.add(new BasicDBObject("Employer Id", employerSsn).append("date_of_entry", date).append("comment", comment));
                         BasicDBObject newDocument = new BasicDBObject();
-                        newDocument.append("$set", new BasicDBObject().append("comment", comment));
+                        newDocument.append("$set", new BasicDBObject().append("comment", commentList));
                         BasicDBObject searchQuery = new BasicDBObject().append("SSN", employeeSsn);
                         employees.update(searchQuery, newDocument);
                     }
