@@ -1,20 +1,11 @@
 import com.mongodb.*;
-import com.mongodb.util.JSON;
-import org.bson.BasicBSONObject;
 
-import java.io.BufferedReader;
 import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.sun.tools.doclint.Entity.and;
-import static com.sun.tools.doclint.Entity.prod;
-import static javax.swing.text.StyleConstants.Size;
 
-/**
- * Created by anton on 2017-05-22.
- */
 public class Main  {
     List <Product>productList = new ArrayList();
     int totalprice = 0;
@@ -28,10 +19,12 @@ public class Main  {
         System.out.println("Welcome to BeaverCoffee, do you want to create the demo database? (only do it once)\n1. Yes, set it up!\n2. No, I already have it");
         int in = scan.nextInt();
         switch (in) {
-            case 1: setUpDatabase();
+            case 1:
+                setUpDatabase();
                 System.out.print("\n\nThe database has been set up!");
                 break;
-            default: System.out.print("\nNothing changed!");
+            default:
+                System.out.print("\nNothing changed!");
                 break;
         }
 
@@ -53,39 +46,39 @@ public class Main  {
             }
         }
         while (true) {
-                System.out.println();
-                System.out.println("1. Place an order!\n2. Update an order!\n3. Delete an order!\n4. Add member!\n5. Employees\n6. Stock\n7. Get sales\n8. Who sold what?");
-                int input = scan.nextInt();
-                switch (input) {
-                    case 1:
-                        placeOrder();
-                        break;
-                    case 2:
-                        updateOrder();
-                        break;
-                    case 3:
-                        deleteOrder();
-                        break;
-                    case 4:
-                        addMember();
-                        break;
-                    case 5:
-                        employees();
-                        break;
-                    case 6:
-                        stock();
-                        break;
-                    case 7:
-                        getSales();
-                        break;
-                    case 8:
-                        whoSoldThat();
-                        break;
-                    default:
-                        System.out.print("No, wrong");
-                        break;
-                }
+            System.out.println();
+            System.out.println("1. Place an order!\n2. Update an order!\n3. Delete an order!\n4. Add member!\n5. Employees\n6. Stock\n7. Get sales\n8. Who sold what?");
+            int input = scan.nextInt();
+            switch (input) {
+                case 1:
+                    placeOrder();
+                    break;
+                case 2:
+                    updateOrder();
+                    break;
+                case 3:
+                    deleteOrder();
+                    break;
+                case 4:
+                    addMember();
+                    break;
+                case 5:
+                    employees();
+                    break;
+                case 6:
+                    stock();
+                    break;
+                case 7:
+                    getSales();
+                    break;
+                case 8:
+                    whoSoldThat();
+                    break;
+                default:
+                    System.out.print("No, wrong");
+                    break;
             }
+        }
     }
 
     private void whoSoldThat() {
@@ -266,10 +259,6 @@ public class Main  {
         collection.remove(query);
     }
 
-    /**
-     * Updates an existing order. You can't add och delete products to the product list in
-     * an order, only edit existing products. VERY simplistic!
-     */
     private void updateOrder() {
         System.out.print("Please tell me the ID of the order number");
         int ordernumber = scan.nextInt();
@@ -296,7 +285,7 @@ public class Main  {
                 l.remove(product);
                 System.out.println("Type the product you want!");
                 String line = scan.next();
-                System.out.println("Any addons?");
+                System.out.println("Any addons? (Space and enter for nothing)");
                 String line2 = scan.next();
                 System.out.println("what is the price?");
                 String line3 = scan.next();
