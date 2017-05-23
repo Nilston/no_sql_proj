@@ -16,7 +16,7 @@ import static com.sun.tools.doclint.Entity.prod;
 public class Main {
     List <Product>productList = new ArrayList();
     int totalprice = 0;
-    String ssnnbr;
+    String ssnnbr = "";
     Date date = new Date();
     MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
     DB database = mongoClient.getDB("BeaverCoffee");
@@ -40,6 +40,7 @@ public class Main {
                 ssnnbr = scan.nextLine();
             }
             if (ssnnbr.length() > 8) {
+                System.out.println();
                 System.out.println("1. Place an order!\n2. Update an order!\n3. Delete an order!\n4. Add member!\n5. Employees\n6. Stock\n7. Get sales\n8. Who sold what?");
                 int input = scan.nextInt();
                 switch (input) {
@@ -76,16 +77,16 @@ public class Main {
     }
 
     private void whoSoldThat() {
-        System.out.println("Specify the starting time period like: yyyy-MM-dd hh:mm:ss");
+        System.out.println("Specify the starting time period like: yyyy-MM-dd_hh:mm:ss");
         String start = scan.next();
 
-        System.out.println("Specify the ending time period like: yyyy-MM-dd hh:mm:ss");
+        System.out.println("Specify the ending time period like: yyyy-MM-dd_hh:mm:ss");
         String end = scan.next();
         Date fromDate = new Date();
         Date toDate = new Date();
         try {
-            fromDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(start);
-            toDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(end);
+            fromDate = new SimpleDateFormat("yyyy-MM-dd_hh:mm:ss").parse(start);
+            toDate = new SimpleDateFormat("yyyy-MM-dd_hh:mm:ss").parse(end);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -112,16 +113,16 @@ public class Main {
     }
 
     private void getSales() {
-        System.out.println("Specify the starting time period like: yyyy-MM-dd hh:mm:ss");
+        System.out.println("Specify the starting time period like: yyyy-MM-dd_hh:mm:ss");
         String start = scan.next();
 
-        System.out.println("Specify the ending time period like: yyyy-MM-dd hh:mm:ss");
+        System.out.println("Specify the ending time period like: yyyy-MM-dd_hh:mm:ss");
         String end = scan.next();
         Date fromDate = new Date();
         Date toDate = new Date();
         try {
-            fromDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(start);
-            toDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(end);
+            fromDate = new SimpleDateFormat("yyyy-MM-dd_hh:mm:ss").parse(start);
+            toDate = new SimpleDateFormat("yyyy-MM-dd_hh:mm:ss").parse(end);
         } catch (ParseException e) {
             e.printStackTrace();
         }
