@@ -89,11 +89,27 @@ public class Main {
     private void employees() {
         DBCollection employees = database.getCollection("Employee");
         DBCursor cursor = employees.find();
-
-        while (cursor.hasNext()){
-            System.out.println(cursor.next());
+        BasicDBObject employee;
+        Scanner input = new Scanner(System.in);
+        System.out.println("Would you like to add(1) or see(2) current employees?");
+        int option = input.nextInt();
+        if(option == 1){
+            System.out.println("Enter Employees SSN number");
+            String ssn = input.next();
+            System.out.println("Enter Employees full name");
+            String name = input.next();
+            System.out.println("Enter Employees start date");
+            String startDate = input.next();
+            System.out.println("Enter Employees form of employment");
+            String formOfEmployment = input.next();
+            employee = new BasicDBObject("SSN", ssn).append("name", name).append("start_date", startDate).append("form_of_employment", formOfEmployment);
+            employees.insert(employee);
+        }else if(option == 2) {
+            while (cursor.hasNext()) {
+                System.out.println(cursor.next());
+            }
         }
-
+        System.out.println();
     }
 
     private void addMember() {
