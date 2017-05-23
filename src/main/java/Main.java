@@ -162,6 +162,10 @@ public class Main {
         collection.remove(query);
     }
 
+    /**
+     * Updates an existing order. You can't add och delete products to the product list in
+     * an order, only edit existing products. VERY simplistic!
+     */
     private void updateOrder() {
         System.out.print("Please tell me the ID of the order number");
         int ordernumber = scan.nextInt();
@@ -373,9 +377,13 @@ public class Main {
         locationObj.put("products", productList1);
 
         location.insert(locationObj);
-        System.out.print("Location added.");
-    }
+        System.out.println("Location added.");
 
+        DBCollection counters = database.getCollection("counters");
+        BasicDBObject counter = new BasicDBObject("_id", "orderid").append("seq", 0);
+        counters.insert(counter);
+        System.out.println("Counters added!");
+    }
     public static void main(String args[]) throws UnknownHostException {
         new Main();
 
