@@ -234,7 +234,8 @@ public class Main  {
             System.out.println("Enter Members barcode number");
             String barcode = input.next();
             System.out.println("Enter Members Street address");
-            String street = input.next();
+            String apa = input.nextLine();
+            String street = input.nextLine();
             System.out.println("Enter Members City of residens");
             String city = input.next();
 
