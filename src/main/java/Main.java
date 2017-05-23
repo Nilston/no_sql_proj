@@ -341,7 +341,8 @@ public class Main {
         System.out.println("Added an " + product.name + ", " + product.mod + " that costed " + product.price + " kr.");
     }
     public void syrupCheck(Product p){
-        System.out.println("Do you want any syrup for that one?\n1. Vanilla!\n2. Caramel!\n3. Irish Cream!");
+        System.out.println("Do you want any syrup for that one?\n1. Vanilla!\n2. Caramel!\n3. Irish Cream!\n" +
+                "4. No syrup");
         int input4 = scan.nextInt();
         switch (input4) {
             case 1:
