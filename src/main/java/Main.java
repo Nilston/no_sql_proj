@@ -1,5 +1,6 @@
 import com.mongodb.*;
 import com.mongodb.util.JSON;
+import org.bson.BasicBSONObject;
 
 import java.net.UnknownHostException;
 import java.util.*;
@@ -13,6 +14,8 @@ import static com.sun.tools.doclint.Entity.prod;
 public class Main {
     List <Product>productList = new ArrayList();
     int totalprice = 0;
+    long ssnnbr = 0;
+    Date date = new Date();
     MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
     DB database = mongoClient.getDB("BeaverCoffee");
     Scanner scan = new Scanner(System.in);
@@ -30,27 +33,42 @@ public class Main {
 
         System.out.print("\n-----------------------------------\nWhat would you like to do?\n");
         while (true) {
-            System.out.println("1. Place an order!\n2. Update an order!\n3. Delete an order!\n4. Add member!\n5. Employees\n6. Stock\n7. Get sales\n8. Who sold what?");
-            int input = scan.nextInt();
-            switch (input) {
-                case 1: placeOrder();
-                    break;
-                case 2: updateOrder();
-                    break;
-                case 3: deleteOrder();
-                    break;
-                case 4: addMember();
-                    break;
-                case 5: employees();
-                    break;
-                case 6: stock();
-                    break;
-                case 7: getSales();
-                    break;
-                case 8: whoSoldThat();
-                    break;
-                default: System.out.print("No, wrong");
-                    break;
+            if(ssnnbr ==  0) {
+                System.out.println("Enter your SSN(10 digits) to use this machine. ");
+                ssnnbr = scan.nextLong();
+            }
+            if (ssnnbr > 99999999) {
+                System.out.println("1. Place an order!\n2. Update an order!\n3. Delete an order!\n4. Add member!\n5. Employees\n6. Stock\n7. Get sales\n8. Who sold what?");
+                int input = scan.nextInt();
+                switch (input) {
+                    case 1:
+                        placeOrder();
+                        break;
+                    case 2:
+                        updateOrder();
+                        break;
+                    case 3:
+                        deleteOrder();
+                        break;
+                    case 4:
+                        addMember();
+                        break;
+                    case 5:
+                        employees();
+                        break;
+                    case 6:
+                        stock();
+                        break;
+                    case 7:
+                        getSales();
+                        break;
+                    case 8:
+                        whoSoldThat();
+                        break;
+                    default:
+                        System.out.print("No, wrong");
+                        break;
+                }
             }
         }
     }
@@ -64,17 +82,44 @@ public class Main {
     }
 
     private void stock() {
+        DBCollection location = database.getCollection("Location");
+        DBCursor cursor = location.find();
 
+        while (cursor.hasNext()) {
+            DBObject products = cursor.next();
+            DBObject prods = (DBObject) products.get("products");
+            Map map = prods.toMap();
+            Object []arr = map.values().toArray();
+            for(Object o : arr) {
+                System.out.println(o + "\n");
+            }
+        }
     }
 
     private void employees() {
         DBCollection employees = database.getCollection("Employee");
         DBCursor cursor = employees.find();
-
-        while (cursor.hasNext()){
-            System.out.println(cursor.next());
+        BasicDBObject employee;
+        Scanner input = new Scanner(System.in);
+        System.out.println("Would you like to add(1) or see(2) current employees?");
+        int option = input.nextInt();
+        if(option == 1){
+            System.out.println("Enter Employees SSN number");
+            String ssn = input.next();
+            System.out.println("Enter Employees full name");
+            String name = input.next();
+            System.out.println("Enter Employees start date");
+            String startDate = input.next();
+            System.out.println("Enter Employees form of employment");
+            String formOfEmployment = input.next();
+            employee = new BasicDBObject("SSN", ssn).append("name", name).append("start_date", startDate).append("form_of_employment", formOfEmployment);
+            employees.insert(employee);
+        }else if(option == 2) {
+            while (cursor.hasNext()) {
+                System.out.println(cursor.next());
+            }
         }
-
+        System.out.println();
     }
 
     private void addMember() {
@@ -220,9 +265,13 @@ public class Main {
                 updateQuantity("choclate mix", choclatecount);
                 updateQuantity("coffee", coffeecount);
                 updateQuantity("milk", milkcount);
+
                 newOrder.put("productlist", proList);
                 newOrder.put("currency", "sek");
+                newOrder.put("serving_employee", ssnnbr);
+                newOrder.put("date", date);
                 order.insert(newOrder);
+
                 theresMore = false;
                 System.out.println("You've ordered ");
                 for(int i = 0; i < productList.size(); i++){
@@ -277,11 +326,26 @@ public class Main {
     }
 
     private void addToProductList(Product product) {
+        syrupCheck(product);
         productList.add(product);
         totalprice += product.price;
         System.out.println("Added an " + product.name + ", " + product.mod + " that costed " + product.price + " kr.");
     }
-
+    public void syrupCheck(Product p){
+        System.out.println("Do you want any syrup for that one?\n1. Vanilla!\n2. Caramel!\n3. Irish Cream!");
+        int input4 = scan.nextInt();
+        switch (input4) {
+            case 1:
+                p.mod = p.mod + " with Vanilla Syrup";
+                break;
+            case 2:
+                p.mod = p.mod + " with Caramel Syrup";
+                break;
+            case 3:
+                p.mod = p.mod + " with Irish Cream Syrup";
+                break;
+        }
+    }
     public void setUpDatabase() {
         DBCollection location = database.getCollection("Location");
         BasicDBObject locationObj = new BasicDBObject();
