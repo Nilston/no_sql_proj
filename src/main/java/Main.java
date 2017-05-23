@@ -177,14 +177,27 @@ public class Main {
                 DBCollection order = database.getCollection("Order");
                 BasicDBObject newOrder = new BasicDBObject();
                 BasicDBList proList = new BasicDBList();
+                int milkcount =  0, coffeecount = 0, choclatecount = 0;
                 for(int j = 0; j < productList.size(); j++){
                     proList.add(new BasicDBObject("name", productList.get(j).getName()).append( "mod", productList.get(j).getMod()).append("price", productList.get(j).getPrice()));
+                    if(productList.get(j).getName().equals("Hot Chocolate (Cocoa Mix)")){
+                        choclatecount ++;
+                        milkcount++;
+                    }else if(productList.get(j).getName().equals("Latte") || productList.get(j).getName().equals("Capuccino") ){
+                        milkcount ++;
+                        coffeecount++;
+                    }else{
+                        coffeecount ++;
+                    }
                 }
                 try {
                     newOrder.put("_id", getNextSequence("orderid"));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                updateQuantity("choclate mix", choclatecount);
+                updateQuantity("coffee", coffeecount);
+                updateQuantity("milk", milkcount);
                 newOrder.put("productlist", proList);
                 newOrder.put("currency", "sek");
                 order.insert(newOrder);
@@ -200,6 +213,14 @@ public class Main {
         }
     }
 
+    public void updateQuantity(String content, int amount){
+        DBCollection location = database.getCollection("Location");
+        BasicDBObject query = new BasicDBObject();
+        query.put("name", "BeaverCoffee Malmö");
+        query.append("products.name", content);
+        BasicDBObject update = new BasicDBObject().append("$inc", new BasicDBObject().append("products.$.quantity", - amount));
+        location.update(query, update);
+    }
 
     private void whatMilk(String drink) {
         System.out.println("What kind of steamed milk would you like for your " + drink + "?");
@@ -237,6 +258,36 @@ public class Main {
         productList.add(product);
         totalprice += product.price;
         System.out.println("Added an " + product.name + ", " + product.mod + " that costed " + product.price + " kr.");
+    }
+
+    public void setUpDatabase() {
+        DBCollection location = database.getCollection("Location");
+        BasicDBObject locationObj = new BasicDBObject();
+        BasicDBList productList1 = new BasicDBList();
+
+        BasicDBObject manager = new BasicDBObject("SSN", "6403114120")
+                .append("access_control", "unlimited")
+                .append("name", "Nisse Dahlgren")
+                .append("start_date", "2000-01-01")
+                .append("end_date", "2003-09-11");
+
+        BasicDBObject employer = new BasicDBObject("SSN", "6403114120")
+                .append("access_control", "unlimited")
+                .append("name", "Kalle Blomkvist")
+                .append("start_date", "2000-01-01")
+                .append("end_date", "2003-09-11");
+
+        productList1.add(new BasicDBObject("name", "coffee").append("quantity", 10000));
+        productList1.add(new BasicDBObject("name", "milk").append("quantity", 10000));
+        productList1.add(new BasicDBObject("name", "choclate mix").append("quantity", 5000));
+
+        locationObj.put("name", "BeaverCoffee Malmö");
+        locationObj.put("manager", manager);
+        locationObj.put("employer", employer);
+        locationObj.put("products", productList1);
+
+        location.insert(locationObj);
+        System.out.print("Location tillagd.");
     }
 
     public static void main(String args[]) throws UnknownHostException {
