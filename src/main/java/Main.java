@@ -36,12 +36,23 @@ public class Main  {
         }
 
         System.out.print("\n-----------------------------------\nWhat would you like to do?\n");
-        while (true) {
-            if(ssnnbr.length() ==  0) {
-                System.out.println("Enter your SSN(10 digits) to use this machine. ");
-                ssnnbr = scan.nextLine();
+        boolean temp = true;
+        while (temp) {
+            if (ssnnbr.length() != 10) {
+                System.out.println("Enter your SSN(10 digits) to use this machine. (Default sign in 0000000000) ");
+                ssnnbr = scan.next();
+                DBCollection employee = database.getCollection("Employee");
+                BasicDBObject query = new BasicDBObject();
+                query.put("SSN", ssnnbr);
+                DBCursor cursor = employee.find(query);
+                if (cursor.hasNext()) {
+                    temp = false;
+                } else {
+                    System.out.println("Wrong login! If you cant remember yours, use default!");
+                }
             }
-            if (ssnnbr.length() > 8) {
+        }
+        while (true) {
                 System.out.println();
                 System.out.println("1. Place an order!\n2. Update an order!\n3. Delete an order!\n4. Add member!\n5. Employees\n6. Stock\n7. Get sales\n8. Who sold what?");
                 int input = scan.nextInt();
@@ -75,7 +86,6 @@ public class Main  {
                         break;
                 }
             }
-        }
     }
 
     private void whoSoldThat() {
@@ -480,7 +490,84 @@ public class Main  {
         BasicDBObject counter = new BasicDBObject("_id", "orderid").append("seq", 0);
         counters.insert(counter);
         System.out.println("Counters added!");
+
+        DBCollection employees = database.getCollection("Employee");
+        BasicDBObject employeesObj = new BasicDBObject();
+        employeesObj.put("SSN", "0000000000");
+        employeesObj.put("name", "Jöns Persson");
+        employeesObj.put("start_date", "2001-02-24");
+        employeesObj.put("form_of_employment", "Assistant Manager");
+
+        BasicDBObject employeesObj2 = new BasicDBObject();
+        employeesObj2.put("SSN", "1709290501");
+        employeesObj2.put("name", "Per Jönssson");
+        employeesObj2.put("start_date", "2011-02-25");
+        employeesObj2.put("form_of_employment", "Janitor");
+
+        employees.insert(employeesObj);
+        employees.insert(employeesObj2);
+
+        System.out.println("2 Employees added.");
+
+        DBCollection member = database.getCollection("Member");
+        BasicDBObject membersObj = new BasicDBObject();
+        BasicDBList adressList = new BasicDBList();
+
+        adressList.add(new BasicDBObject("street", "Ronnevägen 11")
+                .append("city", "Köln"));
+
+        membersObj.put("SSN", "6412123454");
+        membersObj.put("occupation", "Dancer");
+        membersObj.put("barcode", "iasd99998aaasd");
+        membersObj.put("address", adressList);
+
+        member.insert(membersObj);
+
+        System.out.println("1 Member added.");
+
+        DBCollection order = database.getCollection("Order");
+        BasicDBObject orderObj = new BasicDBObject();
+        BasicDBList productList2 = new BasicDBList();
+        productList2.add(new BasicDBObject("productlist", new BasicDBObject("name", "Brewed Coffee")
+                .append("mod", " with Vanilla Syrup")
+                .append("price", 20)));
+        productList2.add(new BasicDBObject("productlist", new BasicDBObject("name", "Espresso")
+                .append("mod", " with Caramel Syrup")
+                .append("price", 20)));
+        productList2.add(new BasicDBObject("productlist", new BasicDBObject("name", "Latte")
+                .append("mod", "2% Milk")
+                .append("price", 30)));
+
+        orderObj.put("_id", 1);
+        orderObj.put("productlist", productList2);
+        orderObj.put("serving_employee", "0000000000");
+        orderObj.put("date", date);
+        orderObj.put("currency", "sek");
+
+        BasicDBObject orderObj2 = new BasicDBObject();
+        BasicDBList productList3 = new BasicDBList();
+        productList3.add(new BasicDBObject("productlist", new BasicDBObject("name", "Latte")
+                .append("mod", ",2% Milk with Vanilla Syrup")
+                .append("price", 20)));
+        productList3.add(new BasicDBObject("productlist", new BasicDBObject("name", "Espresso")
+                .append("mod", " with Caramel Syrup")
+                .append("price", 20)));
+        productList3.add(new BasicDBObject("productlist", new BasicDBObject("name", "Espresso")
+                .append("mod", "")
+                .append("price", 30)));
+
+        orderObj.put("_id", 2);
+        orderObj.put("productlist", productList3);
+        orderObj.put("serving_employee", "28091234");
+        orderObj.put("date", date);
+        orderObj.put("currency", "dollar");
+
+
+        order.insert(orderObj);
+        order.insert(orderObj2);
+        System.out.println("2 Orders added.");
     }
+
     public static void main(String args[]) throws UnknownHostException {
         new Main();
 
