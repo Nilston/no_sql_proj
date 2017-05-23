@@ -98,6 +98,8 @@ public class Main {
     }
 
     private void deleteOrder() {
+        System.out.print("Please type the ID of the order to delete:");
+        int orderID = scan.nextInt();
 
     }
 
@@ -135,7 +137,6 @@ public class Main {
                 System.out.print("Nothing chosen, aborting editing\n");
                 break;
         }
-
         collection.update(query, newOrder);
     }
 
@@ -178,6 +179,11 @@ public class Main {
                 BasicDBList proList = new BasicDBList();
                 for(int j = 0; j < productList.size(); j++){
                     proList.add(new BasicDBObject("name", productList.get(j).getName()).append( "mod", productList.get(j).getMod()).append("price", productList.get(j).getPrice()));
+                }
+                try {
+                    newOrder.put("_id", getNextSequence("orderid"));
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 newOrder.put("productlist", proList);
                 newOrder.put("currency", "sek");
@@ -257,4 +263,15 @@ public class Main {
             return mod;
         }
     }
+
+    public Object getNextSequence(String name) throws Exception {
+        DBCollection collection = database.getCollection("counters");
+        BasicDBObject find = new BasicDBObject();
+        find.put("_id", name);
+        BasicDBObject update = new BasicDBObject();
+        update.put("$inc", new BasicDBObject("seq", 1));
+        DBObject obj = collection.findAndModify(find, update);
+        return obj.get("seq");
+    }
+
 }
