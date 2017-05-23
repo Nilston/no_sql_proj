@@ -528,15 +528,15 @@ public class Main  {
         DBCollection order = database.getCollection("Order");
         BasicDBObject orderObj = new BasicDBObject();
         BasicDBList productList2 = new BasicDBList();
-        productList2.add(new BasicDBObject("productlist", new BasicDBObject("name", "Brewed Coffee")
+        productList2.add(new BasicDBObject("name", "Brewed Coffee")
                 .append("mod", " with Vanilla Syrup")
-                .append("price", 20)));
-        productList2.add(new BasicDBObject("productlist", new BasicDBObject("name", "Espresso")
+                .append("price", 20));
+        productList2.add(new BasicDBObject("name", "Espresso")
                 .append("mod", " with Caramel Syrup")
-                .append("price", 20)));
-        productList2.add(new BasicDBObject("productlist", new BasicDBObject("name", "Latte")
+                .append("price", 20));
+        productList2.add(new BasicDBObject("name", "Latte")
                 .append("mod", "2% Milk")
-                .append("price", 30)));
+                .append("price", 30));
 
         orderObj.put("_id", 1);
         orderObj.put("productlist", productList2);
@@ -546,15 +546,15 @@ public class Main  {
 
         BasicDBObject orderObj2 = new BasicDBObject();
         BasicDBList productList3 = new BasicDBList();
-        productList3.add(new BasicDBObject("productlist", new BasicDBObject("name", "Latte")
+        productList3.add(new BasicDBObject("name", "Latte")
                 .append("mod", ",2% Milk with Vanilla Syrup")
-                .append("price", 20)));
-        productList3.add(new BasicDBObject("productlist", new BasicDBObject("name", "Espresso")
+                .append("price", 20));
+        productList3.add(new BasicDBObject("name", "Espresso")
                 .append("mod", " with Caramel Syrup")
-                .append("price", 20)));
-        productList3.add(new BasicDBObject("productlist", new BasicDBObject("name", "Espresso")
+                .append("price", 20));
+        productList3.add(new BasicDBObject("name", "Espresso")
                 .append("mod", "")
-                .append("price", 30)));
+                .append("price", 30));
 
         orderObj.put("_id", 2);
         orderObj.put("productlist", productList3);
