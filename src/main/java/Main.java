@@ -14,7 +14,7 @@ import static com.sun.tools.doclint.Entity.prod;
 public class Main {
     List <Product>productList = new ArrayList();
     int totalprice = 0;
-    long ssnnbr = 0;
+    String ssnnbr;
     Date date = new Date();
     MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
     DB database = mongoClient.getDB("BeaverCoffee");
@@ -33,11 +33,11 @@ public class Main {
 
         System.out.print("\n-----------------------------------\nWhat would you like to do?\n");
         while (true) {
-            if(ssnnbr ==  0) {
+            if(ssnnbr.length() ==  0) {
                 System.out.println("Enter your SSN(10 digits) to use this machine. ");
-                ssnnbr = scan.nextLong();
+                ssnnbr = scan.nextLine();
             }
-            if (ssnnbr > 99999999) {
+            if (ssnnbr.length() > 8) {
                 System.out.println("1. Place an order!\n2. Update an order!\n3. Delete an order!\n4. Add member!\n5. Employees\n6. Stock\n7. Get sales\n8. Who sold what?");
                 int input = scan.nextInt();
                 switch (input) {
