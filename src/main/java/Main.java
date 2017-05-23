@@ -123,33 +123,38 @@ public class Main {
     }
 
     private void addMember() {
-        System.out.println("\n\nSo... You want to add a member? \nEnter the becoming members SSN number please.");
         Scanner input = new Scanner(System.in);
-        String ssn = input.next();
+        DBCollection members = database.getCollection("Member");
+        BasicDBObject member;
+        BasicDBList addressList = new BasicDBList();
+        DBCursor cursor = members.find();
+        System.out.println("Would you like to add(1) or see(2) current members?");
+        int option = input.nextInt();
+        if(option == 1){
+            System.out.println("Enter Members SSN number(10 digits)");
+            String ssn = input.next();
+            if(ssn.length() < 10){
+                System.out.println("Enter Members SSN number(10 digits)");
+                ssn = input.next();
+            }
+            System.out.println("Enter Members occupation");
+            String occupation = input.next();
+            System.out.println("Enter Members barcode number");
+            String barcode = input.next();
+            System.out.println("Enter Members Street address");
+            String street = input.next();
+            System.out.println("Enter Members City of residens");
+            String city = input.next();
 
-        DBCollection customers = database.getCollection("Customer");
-        DBCursor cursor = customers.find();
-
-        while (cursor.hasNext()) {
-            DBObject aMember = cursor.next();
-            if (aMember.get("SSN").equals(ssn) && aMember.get("club_member").equals("false")) {
-                System.out.println("Are you sure you want to add " + ssn + " as a member? (Yes or No)");
-                String answer = input.next().toLowerCase();
-                if (answer.equals("yes")) {
-
-                    BasicDBObject newDocument = new BasicDBObject();
-                    newDocument.append("$set", new BasicDBObject().append("club_member", "true"));
-                    BasicDBObject searchQuery = new BasicDBObject().append("SSN", ssn);
-                    customers.update(searchQuery, newDocument);
-
-                    System.out.println(aMember.get("SSN") + " I now a member!");
-
-                }
-            } else if (aMember.get("SSN").equals(ssn)) {
-                System.out.println(ssn + " Is already a member!");
+            addressList.add(new BasicDBObject("street", street).append("city", city));
+            member = new BasicDBObject("SSN", ssn).append("occupation", occupation).append("barcode", barcode).append("address", addressList);
+            members.insert(member);
+        }else if(option == 2) {
+            while (cursor.hasNext()) {
+                System.out.println(cursor.next());
             }
         }
-
+        System.out.println();
     }
 
     private void deleteOrder() {
