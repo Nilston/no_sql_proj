@@ -2,16 +2,18 @@ import com.mongodb.*;
 import com.mongodb.util.JSON;
 import org.bson.BasicBSONObject;
 
+import java.io.BufferedReader;
 import java.net.UnknownHostException;
 import java.util.*;
 
 import static com.sun.tools.doclint.Entity.and;
 import static com.sun.tools.doclint.Entity.prod;
+import static javax.swing.text.StyleConstants.Size;
 
 /**
  * Created by anton on 2017-05-22.
  */
-public class Main {
+public class Main  {
     List <Product>productList = new ArrayList();
     int totalprice = 0;
     long ssnnbr = 0;
@@ -98,10 +100,12 @@ public class Main {
 
     private void employees() {
         DBCollection employees = database.getCollection("Employee");
+        DBCollection location = database.getCollection("Location");
         DBCursor cursor = employees.find();
         BasicDBObject employee;
         Scanner input = new Scanner(System.in);
-        System.out.println("Would you like to add(1) or see(2) current employees?");
+        System.out.println("Would you like to add(1) or see(2) current employees?\n Or do you as an employer wanna leave a comment" +
+                "about an employee?(3)");
         int option = input.nextInt();
         if(option == 1){
             System.out.println("Enter Employees SSN number");
@@ -117,6 +121,34 @@ public class Main {
         }else if(option == 2) {
             while (cursor.hasNext()) {
                 System.out.println(cursor.next());
+            }
+        } else if(option == 3){
+            System.out.println("Enter your SSN to validate your authority");
+            String employerSsn = input.next();
+            DBCursor cursor1 = location.find();
+            BasicDBObject privileges = (BasicDBObject) cursor1.next().get("employer");
+
+            if (privileges.get("SSN").equals(employerSsn)){
+                System.out.println("Enter the employees SSN number.");
+                String employeeSsn = input.next();
+                DBCursor cursor2 = employees.find();
+                while (cursor2.hasNext()){
+                    if(cursor2.next().get("SSN").equals(employeeSsn)) {
+                        System.out.println("Enter a comment for " + employeeSsn);
+                        String apa = input.nextLine();
+                        String comment = input.nextLine();
+
+                        if(comment.length() > 300){
+                            comment = comment.substring(0, 300);
+                        }
+
+                        BasicDBObject newDocument = new BasicDBObject();
+                        newDocument.append("$set", new BasicDBObject().append("comment", comment));
+                        BasicDBObject searchQuery = new BasicDBObject().append("SSN", employeeSsn);
+                        employees.update(searchQuery, newDocument);
+                    }
+                    System.out.println();
+                }
             }
         }
         System.out.println();
