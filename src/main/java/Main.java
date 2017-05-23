@@ -18,7 +18,17 @@ public class Main {
     Scanner scan = new Scanner(System.in);
     public Main() throws UnknownHostException {
 
-        System.out.println("Welcome to BeaverCoffee - What do you wanna do?");
+        System.out.println("Welcome to BeaverCoffee, do you want to create the demo database? (only do it once)\n1. Yes, set it up!\n2. No, I already have it");
+        int in = scan.nextInt();
+        switch (in) {
+            case 1: setUpDatabase();
+                System.out.print("\n\nThe database has been set up!");
+                break;
+            default: System.out.print("\nNothing changed!");
+                break;
+        }
+
+        System.out.print("\n-----------------------------------\nWhat would you like to do?\n");
         while (true) {
             System.out.println("1. Place an order!\n2. Update an order!\n3. Delete an order!\n4. Add member!\n5. Employees\n6. Stock\n7. Get sales\n8. Who sold what?");
             int input = scan.nextInt();
@@ -101,6 +111,10 @@ public class Main {
         System.out.print("Please type the ID of the order to delete:");
         int orderID = scan.nextInt();
 
+        DBCollection collection = database.getCollection("Order");
+        BasicDBObject query = new BasicDBObject();
+        query.append("_id", orderID);
+        collection.remove(query);
     }
 
     private void updateOrder() {
@@ -108,25 +122,33 @@ public class Main {
         int ordernumber = scan.nextInt();
 
         DBCollection collection = database.getCollection("Order");
-        DBObject query = new BasicDBObject("_id", "jo");
+        DBObject query = new BasicDBObject("_id", ordernumber);
         DBCursor cursor = collection.find(query);
         DBObject order = cursor.one();
 
-        System.out.print((String) order.get("id"));
         BasicDBObject newOrder = new BasicDBObject();
         System.out.print("What do you want to do?\n1. Edit product list\n2. Edit currency");
         int in = scan.nextInt();
         switch (in) {
             case 1:
-                System.out.print("Exsisting products in the list:");
-                List l = (List) order.get("product_list");
-                for (int i = 0; i <= l.size(); i++) {
-                    System.out.println("" + i + ". " + l.get(i));
+                System.out.println("Existing products in the list:");
+
+                BasicDBList l = (BasicDBList) order.get("productlist");
+                for (int i = 0; i < l.size(); i++) {
+                    BasicDBObject product = (BasicDBObject) l.get(i);
+                    System.out.println("" + i + ". " + product.get("name"));
                 }
                 System.out.println("Select what product to edit:");
                 int product = scan.nextInt();
                 l.remove(product);
-
+                System.out.println("Type the product you want!");
+                String line = scan.next();
+                System.out.println("Any addons?");
+                String line2 = scan.next();
+                System.out.println("what is the price?");
+                String line3 = scan.next();
+                l.add(new BasicDBObject("name", line).append( "mod", line2).append("price", line3));
+                newOrder.append("$set", new BasicDBObject().append("productlist", l));
                 break;
             case 2:
                 System.out.print("Please type the currency used: ");
@@ -287,7 +309,7 @@ public class Main {
         locationObj.put("products", productList1);
 
         location.insert(locationObj);
-        System.out.print("Location tillagd.");
+        System.out.print("Location added.");
     }
 
     public static void main(String args[]) throws UnknownHostException {
@@ -324,5 +346,4 @@ public class Main {
         DBObject obj = collection.findAndModify(find, update);
         return obj.get("seq");
     }
-
 }
