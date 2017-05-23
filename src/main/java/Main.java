@@ -353,6 +353,8 @@ public class Main {
             case 3:
                 p.mod = p.mod + " with Irish Cream Syrup";
                 break;
+            case 4:
+                break;
         }
     }
     public void setUpDatabase() {
