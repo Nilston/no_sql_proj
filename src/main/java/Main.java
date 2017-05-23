@@ -3,6 +3,8 @@ import com.mongodb.util.JSON;
 import org.bson.BasicBSONObject;
 
 import java.net.UnknownHostException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.sun.tools.doclint.Entity.and;
@@ -78,7 +80,24 @@ public class Main {
     }
 
     private void getSales() {
+        System.out.println("Specify the starting time period like: yyyy-MM-dd hh:mm:ss");
+        String start = scan.next();
 
+        System.out.println("Specify the ending time period like: yyyy-MM-dd hh:mm:ss");
+        String end = scan.next();
+        Date fromDate = new Date();
+        Date toDate = new Date();
+        try {
+            fromDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(start);
+            toDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(end);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        DBCollection collection = database.getCollection("Order");
+        BasicDBObject query = new BasicDBObject();
+        query.put("date", BasicDBObjectBuilder.start("$gte", fromDate).add("$lte", toDate).get());
+        collection.find(query).sort(new BasicDBObject("dateAdded", -1));
     }
 
     private void stock() {
