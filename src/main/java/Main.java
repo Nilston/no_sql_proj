@@ -538,7 +538,11 @@ public class Main  {
                 .append("mod", "2% Milk")
                 .append("price", 30));
 
-        orderObj.put("_id", 1);
+        try {
+            orderObj.put("_id", getNextSequence("orderid"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         orderObj.put("productlist", productList2);
         orderObj.put("serving_employee", "0000000000");
         orderObj.put("date", date);
@@ -556,11 +560,15 @@ public class Main  {
                 .append("mod", "")
                 .append("price", 30));
 
-        orderObj.put("_id", 2);
-        orderObj.put("productlist", productList3);
-        orderObj.put("serving_employee", "28091234");
-        orderObj.put("date", date);
-        orderObj.put("currency", "dollar");
+        try {
+            orderObj2.put("_id", getNextSequence("orderid"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        orderObj2.put("productlist", productList3);
+        orderObj2.put("serving_employee", "28091234");
+        orderObj2.put("date", date);
+        orderObj2.put("currency", "dollar");
 
 
         order.insert(orderObj);
