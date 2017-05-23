@@ -1,5 +1,6 @@
 import com.mongodb.*;
 import com.mongodb.util.JSON;
+import org.bson.BasicBSONObject;
 
 import java.net.UnknownHostException;
 import java.util.*;
@@ -71,7 +72,18 @@ public class Main {
     }
 
     private void stock() {
+        DBCollection location = database.getCollection("Location");
+        DBCursor cursor = location.find();
 
+        while (cursor.hasNext()) {
+            DBObject products = cursor.next();
+            DBObject prods = (DBObject) products.get("products");
+            Map map = prods.toMap();
+            Object []arr = map.values().toArray();
+            for(Object o : arr) {
+                System.out.println(o + "\n");
+            }
+        }
     }
 
     private void employees() {
